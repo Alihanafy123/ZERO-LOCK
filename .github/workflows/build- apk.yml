@@ -1,9 +1,8 @@
-
 name: Build ZERO LOCK APK
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   workflow_dispatch:
 
 permissions:
@@ -14,40 +13,26 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up JDK 17
+      - name: Setup Java
         uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: '17'
 
-      - name: Extract Android project
-        run: |
-          mkdir -p extracted_project
-          unzip -o ZERO_LOCK_V1_source.zip -d extracted_project
-          find extracted_project -maxdepth 3 -type f | head -100
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
 
-      - name: Find Gradle project
-        run: |
-          GRADLE_FILE=$(find extracted_project -name gradlew -type f | head -1)
-          if [ -z "$GRADLE_FILE" ]; then
-            echo "ERROR: Gradle wrapper not found"
-            exit 1
-          fi
-          echo "GRADLE_DIR=$(dirname "$GRADLE_FILE")" >> "$GITHUB_ENV"
-
-      - name: Build debug APK
-        run: |
-          cd "$GRADLE_DIR"
-          chmod +x gradlew
-          ./gradlew assembleDebug
+      - name: Build APK
+        run: gradle assembleDebug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: ZERO-LOCK-debug-APK
-          path: extracted_project/**/build/outputs/apk/debug/*.apk
+          name: ZERO-LOCK-APK
+          path: app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
-          
