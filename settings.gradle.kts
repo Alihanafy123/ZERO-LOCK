@@ -14,5 +14,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "ZERO LOCK"
+rootProject.name = "ZERO-LOCK"
 include(":app")
