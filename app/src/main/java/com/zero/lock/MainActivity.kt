@@ -1,3 +1,4 @@
+
 package com.zero.lock
 
 import android.app.Activity
@@ -8,59 +9,79 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.EditText
 import android.widget.Button
+import android.app.ActivityManager
 
 class MainActivity : Activity() {
+
+    private lateinit var pin: EditText
+    private lateinit var result: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        try {
-            val layout = LinearLayout(this)
-            layout.orientation = LinearLayout.VERTICAL
-            layout.gravity = Gravity.CENTER
-            layout.setPadding(30, 30, 30, 30)
-            layout.setBackgroundColor(Color.rgb(8, 10, 8))
+        val layout = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            gravity = Gravity.CENTER
+            setPadding(30, 30, 30, 30)
+            setBackgroundColor(Color.rgb(8, 10, 8))
+        }
 
-            val title = TextView(this)
-            title.text = "ZERO LOCK"
-            title.textSize = 32f
-            title.setTextColor(Color.GREEN)
-            title.gravity = Gravity.CENTER
+        val title = TextView(this).apply {
+            text = "ZERO LOCK"
+            textSize = 32f
+            setTextColor(Color.GREEN)
+            gravity = Gravity.CENTER
+        }
 
-            val pin = EditText(this)
-            pin.hint = "ENTER PIN"
-            pin.inputType = 2
-            pin.setTextColor(Color.WHITE)
-            pin.setHintTextColor(Color.GRAY)
-            pin.gravity = Gravity.CENTER
+        pin = EditText(this).apply {
+            hint = "ENTER PIN"
+            inputType = 2
+            setTextColor(Color.WHITE)
+            setHintTextColor(Color.GRAY)
+            gravity = Gravity.CENTER
+        }
 
-            val button = Button(this)
-            button.text = "UNLOCK"
+        val button = Button(this).apply {
+            text = "UNLOCK"
+        }
 
-            val result = TextView(this)
-            result.gravity = Gravity.CENTER
-            result.setTextColor(Color.WHITE)
+        result = TextView(this).apply {
+            gravity = Gravity.CENTER
+            setTextColor(Color.WHITE)
+        }
 
-            button.setOnClickListener {
-                result.text =
-                    if (pin.text.toString() == "299261")
-                        "ACCESS GRANTED"
-                    else
-                        "INCORRECT PIN"
+        button.setOnClickListener {
+            if (pin.text.toString() == "299261") {
+                try {
+                    stopLockTask()
+                    result.text = "ACCESS GRANTED"
+                    result.setTextColor(Color.GREEN)
+                } catch (e: Exception) {
+                    result.text = "UNLOCK FAILED"
+                }
+            } else {
+                result.text = "INCORRECT PIN"
+                pin.text.clear()
             }
+        }
 
-            layout.addView(title)
-            layout.addView(pin)
-            layout.addView(button)
-            layout.addView(result)
+        layout.addView(title)
+        layout.addView(pin)
+        layout.addView(button)
+        layout.addView(result)
 
-            setContentView(layout)
+        setContentView(layout)
+    }
 
-        } catch (e: Exception) {
-            val error = TextView(this)
-            error.text = "ZERO LOCK ERROR: ${e.message}"
-            error.setTextColor(Color.RED)
-            setContentView(error)
+    override fun onResume() {
+        super.onResume()
+
+        if (android.os.Build.VERSION.SDK_INT >= 23) {
+            try {
+                startLockTask()
+            } catch (e: Exception) {
+                result.text = "SCREEN PINNING NOT AVAILABLE"
+            }
         }
     }
 }
