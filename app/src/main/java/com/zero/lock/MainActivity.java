@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.view.Gravity;
-import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
@@ -86,6 +85,17 @@ public class MainActivity extends Activity {
         tp.topMargin = 26;
         root.addView(status, tp);
 
+        // Developer Credit
+        TextView developer = new TextView(this);
+        developer.setText("Created & Developed by Ali Hanafy");
+        developer.setTextColor(green);
+        developer.setTextSize(12);
+        developer.setGravity(Gravity.CENTER);
+
+        LinearLayout.LayoutParams dp = matchWrap();
+        dp.topMargin = 35;
+        root.addView(developer, dp);
+
         setContentView(root);
     }
 
@@ -144,4 +154,4 @@ public class MainActivity extends Activity {
             pinInput.setText("");
         }
     }
-                }
+            }
