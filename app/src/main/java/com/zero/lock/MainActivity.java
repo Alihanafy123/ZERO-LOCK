@@ -9,6 +9,7 @@ import android.view.Gravity;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -49,9 +50,20 @@ public class MainActivity extends Activity {
         subtitle.setTextColor(Color.LTGRAY);
         subtitle.setTextSize(12);
         subtitle.setGravity(Gravity.CENTER);
+
         LinearLayout.LayoutParams sp = matchWrap();
         sp.topMargin = 10;
         root.addView(subtitle, sp);
+
+        // ZERO LOCK Motorcycle Skull Logo
+        ImageView logo = new ImageView(this);
+        logo.setImageResource(R.drawable.zero_logo);
+        logo.setScaleType(ImageView.ScaleType.FIT_CENTER);
+
+        LinearLayout.LayoutParams lp =
+            new LinearLayout.LayoutParams(180, 180);
+        lp.topMargin = 25;
+        root.addView(logo, lp);
 
         pinInput = new EditText(this);
         pinInput.setSingleLine(true);
@@ -65,14 +77,16 @@ public class MainActivity extends Activity {
 
         LinearLayout.LayoutParams ip =
             new LinearLayout.LayoutParams(-1, -2);
-        ip.topMargin = 42;
+        ip.topMargin = 25;
         root.addView(pinInput, ip);
 
         Button unlock = makeButton("فتح ZERO LOCK");
+
         LinearLayout.LayoutParams bp =
             new LinearLayout.LayoutParams(-1, -2);
         bp.topMargin = 20;
         root.addView(unlock, bp);
+
         unlock.setOnClickListener(v -> checkPin());
 
         status = new TextView(this);
