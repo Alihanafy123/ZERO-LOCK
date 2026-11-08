@@ -16,11 +16,15 @@ import android.widget.Toast;
 import android.content.res.ColorStateList;
 
 public class MainActivity extends Activity {
+
     private static final String PIN = "299261";
+
     private EditText pinInput;
     private TextView status;
+
     private int green = Color.rgb(57, 255, 20);
     private int black = Color.rgb(8, 10, 9);
+
     private boolean unlockRequested = false;
 
     @Override
@@ -55,16 +59,19 @@ public class MainActivity extends Activity {
         sp.topMargin = 10;
         root.addView(subtitle, sp);
 
-        // ZERO LOCK Motorcycle Skull Logo
+        // Motorcycle Skull Logo
         ImageView logo = new ImageView(this);
         logo.setImageResource(R.drawable.zero_logo);
         logo.setScaleType(ImageView.ScaleType.FIT_CENTER);
+        logo.setAdjustViewBounds(true);
+        logo.setContentDescription("ZERO LOCK Motorcycle Skull Logo");
 
         LinearLayout.LayoutParams lp =
             new LinearLayout.LayoutParams(180, 180);
         lp.topMargin = 25;
         root.addView(logo, lp);
 
+        // PIN Input
         pinInput = new EditText(this);
         pinInput.setSingleLine(true);
         pinInput.setInputType(2);
@@ -73,13 +80,16 @@ public class MainActivity extends Activity {
         pinInput.setTextColor(Color.WHITE);
         pinInput.setGravity(Gravity.CENTER);
         pinInput.setTextSize(20);
-        pinInput.setBackgroundTintList(ColorStateList.valueOf(green));
+        pinInput.setBackgroundTintList(
+            ColorStateList.valueOf(green)
+        );
 
         LinearLayout.LayoutParams ip =
             new LinearLayout.LayoutParams(-1, -2);
         ip.topMargin = 25;
         root.addView(pinInput, ip);
 
+        // Unlock Button
         Button unlock = makeButton("فتح ZERO LOCK");
 
         LinearLayout.LayoutParams bp =
@@ -89,6 +99,7 @@ public class MainActivity extends Activity {
 
         unlock.setOnClickListener(v -> checkPin());
 
+        // Status
         status = new TextView(this);
         status.setText("جاري تفعيل وضع تثبيت الشاشة...");
         status.setTextColor(Color.LTGRAY);
@@ -137,35 +148,46 @@ public class MainActivity extends Activity {
         b.setTextColor(black);
         b.setAllCaps(false);
         b.setTextSize(15);
-        b.setBackgroundTintList(ColorStateList.valueOf(green));
+        b.setBackgroundTintList(
+            ColorStateList.valueOf(green)
+        );
         return b;
     }
 
     private void checkPin() {
         if (PIN.equals(pinInput.getText().toString())) {
+
             unlockRequested = true;
 
             try {
                 stopLockTask();
+
                 status.setText("تم فتح ZERO LOCK.");
+
                 Toast.makeText(
                     this,
                     "تم فتح ZERO LOCK",
                     Toast.LENGTH_SHORT
                 ).show();
+
                 pinInput.setText("");
+
             } catch (Exception e) {
                 unlockRequested = false;
                 status.setText("تعذر إلغاء تثبيت الشاشة.");
             }
+
         } else {
+
             status.setText("الرقم السري غير صحيح.");
+
             Toast.makeText(
                 this,
                 "رقم سري غير صحيح",
                 Toast.LENGTH_SHORT
             ).show();
+
             pinInput.setText("");
         }
     }
-            }
+    }
