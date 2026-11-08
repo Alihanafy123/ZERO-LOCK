@@ -3,79 +3,64 @@ package com.zero.lock
 import android.app.Activity
 import android.os.Bundle
 import android.graphics.Color
-import android.graphics.Typeface
 import android.view.Gravity
-import android.view.ViewGroup
-import android.widget.*
+import android.widget.LinearLayout
+import android.widget.TextView
+import android.widget.EditText
+import android.widget.Button
 
 class MainActivity : Activity() {
-
-    private val pin = "299261"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val layout = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            gravity = Gravity.CENTER
-            setPadding(32, 32, 32, 32)
-            setBackgroundColor(Color.rgb(8, 10, 8))
-        }
+        try {
+            val layout = LinearLayout(this)
+            layout.orientation = LinearLayout.VERTICAL
+            layout.gravity = Gravity.CENTER
+            layout.setPadding(30, 30, 30, 30)
+            layout.setBackgroundColor(Color.rgb(8, 10, 8))
 
-        val title = TextView(this).apply {
-            text = "ZERO LOCK"
-            textSize = 34f
-            setTextColor(Color.rgb(0, 255, 100))
-            typeface = Typeface.DEFAULT_BOLD
-            gravity = Gravity.CENTER
-        }
+            val title = TextView(this)
+            title.text = "ZERO LOCK"
+            title.textSize = 32f
+            title.setTextColor(Color.GREEN)
+            title.gravity = Gravity.CENTER
 
-        val subtitle = TextView(this).apply {
-            text = "SECURE ACCESS"
-            textSize = 14f
-            setTextColor(Color.LTGRAY)
-            gravity = Gravity.CENTER
-        }
+            val pin = EditText(this)
+            pin.hint = "ENTER PIN"
+            pin.inputType = 2
+            pin.setTextColor(Color.WHITE)
+            pin.setHintTextColor(Color.GRAY)
+            pin.gravity = Gravity.CENTER
 
-        val input = EditText(this).apply {
-            hint = "ENTER YOUR PIN"
-            setHintTextColor(Color.GRAY)
-            setTextColor(Color.WHITE)
-            textSize = 20f
-            gravity = Gravity.CENTER
-            inputType = 2
-            isSingleLine = true
-        }
+            val button = Button(this)
+            button.text = "UNLOCK"
 
-        val button = Button(this).apply {
-            text = "UNLOCK"
-            setTextColor(Color.BLACK)
-            setBackgroundColor(Color.rgb(0, 255, 100))
-        }
+            val result = TextView(this)
+            result.gravity = Gravity.CENTER
+            result.setTextColor(Color.WHITE)
 
-        val message = TextView(this).apply {
-            gravity = Gravity.CENTER
-            textSize = 16f
-            setTextColor(Color.WHITE)
-        }
-
-        button.setOnClickListener {
-            if (input.text.toString() == pin) {
-                message.text = "ACCESS GRANTED"
-                message.setTextColor(Color.GREEN)
-            } else {
-                message.text = "INCORRECT PIN"
-                message.setTextColor(Color.RED)
-                input.text.clear()
+            button.setOnClickListener {
+                result.text =
+                    if (pin.text.toString() == "299261")
+                        "ACCESS GRANTED"
+                    else
+                        "INCORRECT PIN"
             }
+
+            layout.addView(title)
+            layout.addView(pin)
+            layout.addView(button)
+            layout.addView(result)
+
+            setContentView(layout)
+
+        } catch (e: Exception) {
+            val error = TextView(this)
+            error.text = "ZERO LOCK ERROR: ${e.message}"
+            error.setTextColor(Color.RED)
+            setContentView(error)
         }
-
-        layout.addView(title)
-        layout.addView(subtitle)
-        layout.addView(input)
-        layout.addView(button)
-        layout.addView(message)
-
-        setContentView(layout)
     }
 }
