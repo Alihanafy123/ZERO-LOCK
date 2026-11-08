@@ -3,9 +3,12 @@ package com.zero.lock;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.view.Gravity;
+import android.view.MotionEvent;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
@@ -21,11 +24,39 @@ public class MainActivity extends Activity {
 
     private EditText pinInput;
     private TextView status;
+    private ImageView logo;
 
     private int green = Color.rgb(57, 255, 20);
     private int black = Color.rgb(8, 10, 9);
 
     private boolean unlockRequested = false;
+    private boolean emergencyExitTriggered = false;
+
+    private final Handler exitHandler =
+        new Handler(Looper.getMainLooper());
+
+    private final Runnable emergencyExit = new Runnable() {
+        @Override
+        public void run() {
+            emergencyExitTriggered = true;
+            unlockRequested = true;
+
+            try {
+                stopLockTask();
+
+                status.setText("تم إيقاف ZERO LOCK.");
+                Toast.makeText(
+                    MainActivity.this,
+                    "تم إيقاف ZERO LOCK",
+                    Toast.LENGTH_SHORT
+                ).show();
+
+            } catch (Exception e) {
+                unlockRequested = false;
+                status.setText("تعذر إيقاف تثبيت الشاشة.");
+            }
+        }
+    };
 
     @Override
     public void onCreate(Bundle state) {
@@ -60,7 +91,7 @@ public class MainActivity extends Activity {
         root.addView(subtitle, sp);
 
         // Motorcycle Skull Logo
-        ImageView logo = new ImageView(this);
+        logo = new ImageView(this);
         logo.setImageResource(R.drawable.zero_logo);
         logo.setScaleType(ImageView.ScaleType.FIT_CENTER);
         logo.setAdjustViewBounds(true);
@@ -70,6 +101,22 @@ public class MainActivity extends Activity {
             new LinearLayout.LayoutParams(180, 180);
         lp.topMargin = 25;
         root.addView(logo, lp);
+
+        // Hold logo for 60 seconds to exit
+        logo.setOnTouchListener((view, event) -> {
+            switch (event.getAction()) {
+                case MotionEvent.ACTION_DOWN:
+                    emergencyExitTriggered = false;
+                    exitHandler.postDelayed(emergencyExit, 60000);
+                    return true;
+
+                case MotionEvent.ACTION_UP:
+                case MotionEvent.ACTION_CANCEL:
+                    exitHandler.removeCallbacks(emergencyExit);
+                    return true;
+            }
+            return true;
+        });
 
         // PIN Input
         pinInput = new EditText(this);
@@ -138,6 +185,12 @@ public class MainActivity extends Activity {
         }
     }
 
+    @Override
+    protected void onDestroy() {
+        exitHandler.removeCallbacks(emergencyExit);
+        super.onDestroy();
+    }
+
     private LinearLayout.LayoutParams matchWrap() {
         return new LinearLayout.LayoutParams(-1, -2);
     }
@@ -190,4 +243,4 @@ public class MainActivity extends Activity {
             pinInput.setText("");
         }
     }
-    }
+            }
